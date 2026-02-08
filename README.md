@@ -1,4 +1,22 @@
-# Exercise 01 -- Domain-Driven Design & Strong Typing in TypeScript
+# Strong Typing in TypeScript for robust domain-driven design
+
+## PREVIOUS KNOWLEDGE
+
+1. Running code in TypeScript with Node.js
+2. Basic TypeScript types (number, string, boolean, etc.)
+3. Functions and type annotations
+4. Type safety and compile-time checks
+5. Factory functions
+
+## NEW KNOWLEDGE
+
+1. Factory function to create Branded Types
+2. Smart constructors
+3. Value objects
+4. Entities
+5. Parse, don't validate
+
+## Exercise 01 -- Domain-Driven Design & Strong Typing in TypeScript
 
 ## The Problem
 
