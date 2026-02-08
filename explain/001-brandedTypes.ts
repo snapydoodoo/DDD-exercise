@@ -89,29 +89,6 @@ console.log(`Total cost: $${total}`)
 // 	return value as Quantity
 // }
 
-// const pizzaPrice = makePrice(-10)
-// const pizzaQuantity = makeQuantity(3)
-
-// const totalCost = calculatePrice(pizzaPrice, pizzaQuantity)
-// console.log(`Total cost: $${totalCost}`)
-
-/*  Now if we try to do something like this:  */
-// const invalidTotal = calculatePrice(45651321, -3) // <-- TypeScript error!
-
-// const makePrice = (value: number): USD => {
-// 	if (value < 0) throw new Error("Price cannot be negative")
-// 	if (value > 1000)
-// 		throw new Error("Price seems suspiciously high for a pizza!")
-// 	return value as USD
-// }
-
-// const makeQuantity = (value: number): Quantity => {
-// 	if (value <= 0) throw new Error("Quantity must be positive")
-// 	if (!Number.isInteger(value))
-// 		throw new Error("Quantity must be a whole number")
-// 	return value as Quantity
-// }
-
 // try {
 // 	// These validators ensure the numbers make sense before the function ever runs
 // 	const pizzaPrice = makePrice(-10)
@@ -121,8 +98,6 @@ console.log(`Total cost: $${total}`)
 // 	console.log(`Total is $${total}`) // Total is $30
 
 // try {
-// 	// const pizzaPrice = makePrice(15)
-// 	// const pizzaQuantity = makeQuantity(15615651)
 
 // 	const total = calculatePrice(456 as USD, 4856 as Quantity)
 
