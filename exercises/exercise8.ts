@@ -31,31 +31,35 @@ import { logError } from "./logger.js"
 //   - This is a core DDD principle: push validation to the boundary of
 //     your system (user input, API responses) and work with guaranteed-valid
 //     types everywhere else.
-// ============================================================================
+//============================================================================
+
+type Email = string & { readonly __brand: unique symbol }
+
+function parseEmail(raw: string): Email {
+	const trimmed = raw.trim()
+	if (trimmed.length === 0) throw new Error("Email cannot be empty")
+	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed))
+		throw new Error(`Invalid email format: "${raw}"`)
+	return trimmed.toLowerCase() as Email
+}
 
 export function exercise8_EmailValidation() {
 	type Customer = {
 		name: string
-		email: string
+		email: Email
 	}
 
-	// TODO: Replace `string` with a branded Email type backed by parseEmail().
-	// After this change, constructing a Customer with an invalid email will
-	// throw at runtime, and the type system prevents passing raw strings
-	// where an Email is expected.
+	const customers: Customer[] = []
 
-	// All these pass TypeScript checking
-	const customers: Customer[] = [
-		{ name: "Alice", email: "alice@example.com" }, // Valid
-		{ name: "Bob", email: "not-an-email" }, // Silent bug!
-		{ name: "Charlie", email: "charlie@@double.com" }, // Silent bug!
-		{ name: "Diana", email: "@no-local-part.com" }, // Silent bug!
-		{ name: "Eve", email: "eve@" }, // Silent bug!
-		{ name: "Frank", email: " " }, // Silent bug! Just whitespace
-	]
+	// Example of safely adding customers
+	try {
+		customers.push({ name: "Alice", email: parseEmail("alice@example.com") })
+		customers.push({ name: "Bob", email: parseEmail("not-an-email") }) // ❌ throws
+	} catch (err) {
+		logError(8, "Caught invalid email while constructing customer", { error: err })
+	}
 
-	logError(8, "Invalid emails accepted - no domain validation", {
+	logError(8, "Validated customers with Email type", {
 		customers,
-		issue: "Email is just a string - no validation of email format!",
 	})
 }

@@ -29,45 +29,55 @@ import { logError } from "./logger.js"
 // Repository is responsible for ensuring no two Entities share an ID.
 // This separates identity validation (Value Object) from uniqueness
 // enforcement (Repository).
-// ============================================================================
+//============================================================================
+
+// Branded type for OrderId
+type OrderId = string & { readonly __brand: unique symbol }
+
+// Factory to enforce a consistent format
+function createOrderId(raw: string): OrderId {
+	if (!/^ORD-\d{5,}$/.test(raw))
+		throw new Error("OrderId must match ORD-XXXXX format")
+	return raw as OrderId
+}
+
+// Optional: generate a unique OrderId automatically
+function generateOrderId(): OrderId {
+	return `ORD-${Date.now()}-${Math.random().toString(36).slice(2, 7)}` as OrderId
+}
 
 export function exercise5_IdentityCrisis() {
 	type Order = {
-		orderId: string // Just a string - could be anything!
+		orderId: OrderId
 		customerName: string
 		total: number
 	}
 
-	// TODO: Replace `string` with an OrderId branded type.
-	// Use a factory function that enforces a consistent format.
-	// Consider who is responsible for uniqueness (hint: Repository pattern).
-
-	// What makes a valid order ID? Nothing enforced!
+	// Correctly use createOrderId() to enforce format
 	const orders: Order[] = [
 		{
-			orderId: "", // Silent bug! Empty ID
+			orderId: createOrderId("ORD-10001"),
 			customerName: "Alice",
 			total: 25,
 		},
 		{
-			orderId: "12345", // Is this valid?
+			orderId: createOrderId("ORD-10002"),
 			customerName: "Bob",
 			total: 30,
 		},
 		{
-			orderId: "12345", // Silent bug! Duplicate ID
+			orderId: createOrderId("ORD-10003"),
 			customerName: "Charlie",
 			total: 15,
 		},
 		{
-			orderId: "not-a-number", // Silent bug! Inconsistent format
+			orderId: createOrderId("ORD-10004"),
 			customerName: "Diana",
 			total: 20,
 		},
 	]
 
-	logError(5, "Order ID chaos - duplicates, empty, inconsistent formats", {
+	logError(5, "Order IDs validated with branded type", {
 		orders,
-		issue: "Order IDs have no enforced format or uniqueness!",
 	})
 }

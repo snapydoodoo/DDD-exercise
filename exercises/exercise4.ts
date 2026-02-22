@@ -39,39 +39,59 @@ import { logError } from "./logger.js"
 // KEY INSIGHT: The invariant (guests <= capacity) is enforced by the Entity
 // itself. External code cannot put the Entity into an invalid state because
 // there is no public way to set _currentGuests directly.
-// ============================================================================
+//============================================================================
+
+class Table {
+	private _currentGuests: number
+
+	private constructor(
+		public readonly tableNumber: number,
+		public readonly capacity: number,
+	) {
+		this._currentGuests = 0
+	}
+
+	static create(tableNumber: number, capacity: number): Table {
+		if (capacity <= 0) throw new Error("Capacity must be positive")
+		return new Table(tableNumber, capacity)
+	}
+
+	get currentGuests(): number {
+		return this._currentGuests
+	}
+
+	seatGuests(count: number): void {
+		if (count <= 0) throw new Error("Guest count must be positive")
+		if (this._currentGuests + count > this.capacity)
+			throw new Error("Exceeds table capacity")
+		this._currentGuests += count
+	}
+
+	removeGuests(count: number): void {
+		if (count <= 0) throw new Error("Must remove positive number of guests")
+		if (this._currentGuests - count < 0) throw new Error("Cannot have negative guests")
+		this._currentGuests -= count
+	}
+}
 
 export function exercise4_BusinessRuleViolation() {
-	type Table = {
-		tableNumber: number
-		capacity: number
-		currentGuests: number
+	const table = Table.create(5, 4)
+	try {
+		table.seatGuests(3)
+		table.seatGuests(2)
+	} catch (err) {
+		logError(4, "Table overcapacity prevented by Entity", { error: err })
 	}
 
-	// TODO: Replace the plain type with an Entity class that enforces
-	// capacity constraints. The constructor/factory should reject invalid
-	// states, and mutation should go through guarded methods (seatGuests).
-
-	const table: Table = {
-		tableNumber: 5,
-		capacity: 4,
-		currentGuests: 7, // Silent bug! Overcapacity
+	const emptyTable = Table.create(3, 6)
+	try {
+		emptyTable.removeGuests(1)
+	} catch (err) {
+		logError(4, "Negative guest count prevented by Entity", { error: err })
 	}
 
-	logError(4, "Table overcapacity - business rule violated", {
-		table,
-		issue: "currentGuests should never exceed capacity!",
-	})
-
-	// Another violation - negative guests
-	const emptyTable: Table = {
-		tableNumber: 3,
-		capacity: 6,
-		currentGuests: -2, // Silent bug! Negative guests
-	}
-
-	logError(4, "Negative guest count - impossible in real world", {
-		table: emptyTable,
-		issue: "Guests cannot be negative!",
+	logError(4, "Table state after operations", {
+		table5: table,
+		table3: emptyTable,
 	})
 }
